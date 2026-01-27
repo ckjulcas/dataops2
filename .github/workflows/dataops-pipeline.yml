@@ -4,31 +4,35 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
+    paths:
+      - "notebooks/**"
+      - "data/source/**"
+      - ".github/workflows/dataops-pipeline.yml"
 
 jobs:
-  lifecycle:
+  ingestion:
     runs-on: ubuntu-latest
+    env:
+      ENV: dev
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show framework structure
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Databricks-style ingestion notebook
         run: |
-          echo "📂 Data & Analytics lifecycle structure:"
-          tree framework || ls framework
+          python ingestion/10_ingestion_dbx.py
 
-      - name: Ingestion stage (placeholder)
-        run: echo "Ingestion stage - pending implementation"
-
-      - name: Processing stage (placeholder)
-        run: echo "Processing stage - pending implementation"
-
-      - name: Validation & Testing stage (placeholder)
-        run: echo "Validation & Testing stage - pending implementation"
-
-      - name: Deployment stage (placeholder)
-        run: echo "Deployment stage - pending implementation"
-
-      - name: Continuous Monitoring stage (placeholder)
-        run: echo "Monitoring stage - pending implementation"
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingestion-evidence
+          path: |
+            data/landing/**
+            logs/**
+          if-no-files-found: warn
