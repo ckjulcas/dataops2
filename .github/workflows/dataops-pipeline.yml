@@ -6,7 +6,7 @@ on:
     branches: ["main"]
     paths:
       - "data/**"
-      - "framework_base/framework/ingestion/**"
+      - "framework/ingestion/**"
       - ".github/workflows/dataops-pipeline.yml"
 
 jobs:
